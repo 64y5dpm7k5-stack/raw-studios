@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Admin - RAW STUDIOS</title>
+    <style>
+        body { font-family: sans-serif; background: #111; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-box { background: #222; padding: 30px; border-radius: 8px; width: 100%; max-width: 350px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        h2 { text-align: center; margin-bottom: 20px; color: #fff; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; background: #333; border: 1px solid #441; color: #fff; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #e50914; border: none; color: #fff; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #b20710; }
+        .error { color: #ff4d4d; font-size: 14px; text-align: center; margin-bottom: 10px; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="login-box" id="loginForm">
+    <h2>Admin RAW STUDIOS</h2>
+    <div id="errorMsg" class="error">Email atau Password salah!</div>
+    <input type="email" id="email" placeholder="Email Admin" required>
+    <input type="password" id="password" placeholder="Password Baru" required>
+    <button onclick="handleLogin()">Masuk</button>
+</div>
+
+<div id="adminPanel" style="display:none; text-align:center; padding: 20px;">
+    <h2>Selamat Datang di Panel Admin!</h2>
+    <p>Silakan edit konten website Kakak di sini.</p>
+    <button onclick="handleLogout()" style="background:#555; width:auto; padding:8px 15px;">Keluar</button>
+</div>
+
+<script>
+    // SILAKAN UBAH EMAIL DAN PASSWORD DI BAWAH INI SESUAI KEINGINAN KAKAK
+    const ADMIN_EMAIL = "admin@rawstds.com";
+    const ADMIN_PASS = "rawstudios2026";
+
+    // Cek status login saat halaman dibuka
+    if (localStorage.getItem("isLoggedIn") === "true") {
+        showPanel();
+    }
+
+    function handleLogin() {
+        const inputEmail = document.getElementById("email").value;
+        const inputPass = document.getElementById("password").value;
+
+        if (inputEmail === ADMIN_EMAIL && inputPass === ADMIN_PASS) {
+            localStorage.setItem("isLoggedIn", "true");
+            showPanel();
+        } else {
+            document.getElementById("errorMsg").style.display = "block";
+        }
+    }
+
+    function showPanel() {
+        document.getElementById("loginForm").style.display = "none";
+        document.getElementById("adminPanel").style.display = "block";
+    }
+
+    function handleLogout() {
+        localStorage.removeItem("isLoggedIn");
+        location.reload();
+    }
+</script>
+
+</body>
+</html>
