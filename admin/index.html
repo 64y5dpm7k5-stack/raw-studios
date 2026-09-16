@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cPanel Admin - RAW STUDIOS</title>
+    <style>
+        body { font-family: sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; box-sizing: border-box; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: #1e293b; padding: 25px; border-radius: 12px; width: 100%; max-width: 450px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        h2 { text-align: center; margin-bottom: 20px; color: #f1f5f9; font-size: 20px; }
+        label { font-size: 12px; color: #94a3b8; display: block; margin-bottom: 6px; }
+        input, textarea { width: 100%; padding: 12px; margin-bottom: 15px; background: #0f172a; border: 1px solid #334155; color: #fff; border-radius: 6px; box-sizing: border-box; font-family: inherit; }
+        textarea { height: 90px; resize: vertical; }
+        
+        /* Tombol ala Menu cPanel / Dashboard */
+        .menu-btn { width: 100%; padding: 14px; background: #3b82f6; border: none; color: #fff; font-weight: bold; border-radius: 6px; cursor: pointer; margin-bottom: 10px; text-align: left; display: flex; justify-content: space-between; align-items: center; }
+        .menu-btn:hover { background: #2563eb; }
+        
+        .save-btn { background: #10b981; }
+        .save-btn:hover { background: #059669; }
+        
+        .back-btn { background: #475569; margin-top: 5px; }
+        .back-btn:hover { background: #334155; }
+
+        .logout-btn { background: #ef4444; width: 100%; margin-top: 15px; }
+        .logout-btn:hover { background: #dc2626; }
+
+        .error { color: #f87171; font-size: 14px; text-align: center; margin-bottom: 10px; display: none; }
+        .success { color: #34d399; font-size: 14px; text-align: center; margin-bottom: 10px; display: none; }
+        .section-view { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- 1. HALAMAN LOGIN -->
+    <div id="loginForm">
+        <h2>Admin Login</h2>
+        <div id="errorMsg" class="error">Email atau Password salah!</div>
+        <input type="email" id="email" placeholder="Email Admin" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button class="menu-btn" style="justify-content:center; background:#e50914;" onclick="handleLogin()">Masuk ke Dashboard</button>
+    </div>
+
+    <!-- 2. DASHBOARD UTAMA (MENU PILIHAN cPanel) -->
+    <div id="mainDashboard" class="section-view">
+        <h2>RAW STUDIOS cPanel</h2>
+        <p style="font-size: 13px; color: #94a3b8; text-align: center; margin-bottom: 20px;">Pilih bagian website yang ingin dikelola:</p>
+        
+        <button class="menu-btn" onclick="openSection('sectionHeader')"><span>🌐 Edit Header & Title</span> <span>&rsaquo;</span></button>
+        <button class="menu-btn" onclick="openSection('sectionHero')"><span>✍️ Edit Konten Utama (Hero)</span> <span>&rsaquo;</span></button>
+        <button class="menu-btn" onclick="openSection('sectionImage')"><span>🖼️ Edit Gambar / Portfolio</span> <span>&rsaquo;</span></button>
+        <button class="menu-btn" onclick="openSection('sectionFooter')"><span>📌 Edit Footer Bawah</span> <span>&rsaquo;</span></button>
+
+        <button class="menu-btn logout-btn" style="justify-content:center;" onclick="handleLogout()">Keluar (Logout)</button>
+    </div>
+
+    <!-- 3. FORM EDIT: HEADER -->
+    <div id="sectionHeader" class="section-view">
+        <h2>Edit Header & Title</h2>
+        <label>Judul Browser (Tab):</label>
+        <input type="text" id="inTitle">
+        <label>Teks Header Atas:</label>
+        <input type="text" id="inHeader">
+        <button class="menu-btn save-btn" style="justify-content:center;" onclick="saveData()">Simpan Perubahan</button>
+        <button class="menu-btn back-btn" style="justify-content:center;" onclick="backToDashboard()">Kembali ke Menu</button>
+    </div>
+
+    <!-- 4. FORM EDIT: HERO / KONTEN UTAMA -->
+    <div id="sectionHero" class="section-view">
+        <h2>Edit Konten Utama</h2>
+        <label>Judul Utama (Heading):</label>
+        <input type="text" id="inHeroTitle">
+        <label>Deskripsi / Sub-teks:</label>
+        <textarea id="inHeroDesc"></textarea>
+        <button class="menu-btn save-btn" style="justify-content:center;" onclick="saveData()">Simpan Perubahan</button>
+        <button class="menu-btn back-btn" style="justify-content:center;" onclick="backToDashboard()">Kembali ke Menu</button>
+    </div>
+
+    <!-- 5. FORM EDIT: GAMBAR -->
+    <div id="sectionImage" class="section-view">
+        <h2>Edit Gambar Utama</h2>
+        <label>URL / Link Gambar:</label>
+        <input type="text" id="inHeroImage" placeholder="https://...">
+        <button class="menu-btn save-btn" style="justify-content:center;" onclick="saveData()">Simpan Perubahan</button>
+        <button class="menu-btn back-btn" style="justify-content:center;" onclick="backToDashboard()">Kembali ke Menu</button>
+    </div>
+
+    <!-- 6. FORM EDIT: FOOTER -->
+    <div id="sectionFooter" class="section-view">
+        <h2>Edit Footer</h2>
+        <label>Teks Footer Bawah:</label>
+        <input type="text" id="inFooter">
+        <button class="menu-btn save-btn" style="justify-content:center;" onclick="saveData()">Simpan Perubahan</button>
+        <button class="menu-btn back-btn" style="justify-content:center;" onclick="backToDashboard()">Kembali ke Menu</button>
+    </div>
+
+</div>
+
+<script>
+    const ADMIN_EMAIL = "admin@rawstds.com";
+    const ADMIN_PASS = "rawstudios2026";
+
+    // Cek sesi login
+    if (localStorage.getItem("isLoggedIn") === "true") {
+        showDashboard();
+    }
+
+    function handleLogin() {
+        if (document.getElementById("email").value === ADMIN_EMAIL && document.getElementById("password").value === ADMIN_PASS) {
+            localStorage.setItem("isLoggedIn", "true");
+            showDashboard();
+        } else {
+            document.getElementById("errorMsg").style.display = "block";
+        }
+    }
+
+    function showDashboard() {
+        document.getElementById("loginForm").style.display = "none";
+        openSection('mainDashboard');
+        loadValues();
+    }
+
+    function openSection(sectionId) {
+        document.querySelectorAll('.section-view').forEach(el => el.style.display = 'none');
+        document.getElementById(sectionId).style.display = 'block';
+    }
+
+    function backToDashboard() {
+        openSection('mainDashboard');
+        loadValues();
+    }
+
+    function loadValues() {
+        document.getElementById("inTitle").value = localStorage.getItem("siteTitle") || "";
+        document.getElementById("inHeader").value = localStorage.getItem("headerText") || "";
+        document.getElementById("inHeroTitle").value = localStorage.getItem("heroTitle") || "";
+        document.getElementById("inHeroDesc").value = localStorage.getItem("heroDesc") || "";
+        document.getElementById("inHeroImage").value = localStorage.getItem("heroImage") || "";
+        document.getElementById("inFooter").value = localStorage.getItem("footerText") || "";
+    }
+
+    function saveData() {
+        localStorage.setItem("siteTitle", document.getElementById("inTitle").value);
+        localStorage.setItem("headerText", document.getElementById("inHeader").value);
+        localStorage.setItem("heroTitle", document.getElementById("inHeroTitle").value);
+        localStorage.setItem("heroDesc", document.getElementById("inHeroDesc").value);
+        localStorage.setItem("heroImage", document.getElementById("inHeroImage").value);
+        localStorage.setItem("footerText", document.getElementById("inFooter").value);
+
+        alert("Berhasil disimpan! Perubahan akan tampil di website utama.");
+        backToDashboard();
+    }
+
+    function handleLogout() {
+        localStorage.removeItem("isLoggedIn");
+        location.reload();
+    }
+</script>
+
+</body>
+</html>
